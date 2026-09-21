@@ -4,6 +4,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import AuthLayout from '@/layouts/AuthLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
 import { initializeFlashToast } from '@/lib/flashToast';
+import { i18nVue } from 'laravel-vue-i18n';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -23,6 +24,16 @@ void createInertiaApp({
     },
     progress: {
         color: '#4B5563',
+    },
+    withApp(app) {
+        app.use(i18nVue, {
+            resolve: async (lang) => {
+                const langs = import.meta.glob<{
+                    default: Record<string, string>;
+                }>('../../lang/*.json');
+                return await langs[`../../lang/${lang}.json`]();
+            },
+        });
     },
 });
 
