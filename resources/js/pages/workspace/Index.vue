@@ -63,7 +63,7 @@ const handleSubmit = () => {
     >
         <!-- Channels -->
         <div
-            class="shrink-0 scrollbar-thin scrollbar-thumb-fuchsia-800 scrollbar-track-fuchsia-100 overflow-y-scroll rounded-l-lg bg-chatsidebar"
+            class="max-w-2xs shrink-0 scrollbar-thin scrollbar-thumb-fuchsia-800 scrollbar-track-fuchsia-100 overflow-y-scroll rounded-l-lg bg-chatsidebar"
         >
             <div class="flex h-14 items-center gap-x-32 border-b p-4">
                 <h1 class="text-xl font-bold">Laravel</h1>
@@ -76,13 +76,13 @@ const handleSubmit = () => {
                     <li class="flex items-center gap-x-2 rounded-md px-4 py-1">
                         <Message class="h-6 w-6 text-gray-700" />
 
-                        Threads
+                        {{ $t('Threads') }}
                     </li>
 
                     <li class="flex items-center gap-x-2 rounded-md px-4 py-1">
                         <Airplane class="h-6 w-6 text-gray-700" />
 
-                        Drafts & sent
+                        {{ $t('Drafts & sent') }}
                     </li>
                 </ul>
 
@@ -99,7 +99,7 @@ const handleSubmit = () => {
                             <button
                                 class="flex w-full items-center justify-between"
                             >
-                                Channels
+                                {{ $t('Channels') }}
 
                                 <Plus
                                     v-show="!openChannelForm"
@@ -163,7 +163,7 @@ const handleSubmit = () => {
                         >
                             <ChevronDown class="size-3 text-gray-700" />
 
-                            Direct Messages
+                            {{ $t('Direct Messages') }}
                         </button>
                     </li>
 

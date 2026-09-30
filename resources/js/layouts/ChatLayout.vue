@@ -41,7 +41,7 @@ const user = computed(() => page.props.auth.user);
                 <input
                     type="search"
                     class="w-full rounded bg-white/20 px-3 py-1 text-base placeholder:text-white"
-                    placeholder="Search Laravel"
+                    :placeholder="$t('Search :name', { name: 'Laravel' })"
                 />
             </div>
 

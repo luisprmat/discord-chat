@@ -32,7 +32,9 @@ const handleSubmit = () => {
             <input
                 v-model="form.content"
                 class="h-12 w-full resize-none border-none p-3 text-gray-700 focus:ring-0"
-                :placeholder="`Message #${channel.name}`"
+                :placeholder="
+                    $t('Message #:channelName', { channelName: channel.name })
+                "
                 autofocus
             />
 

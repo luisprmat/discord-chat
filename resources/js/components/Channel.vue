@@ -32,7 +32,7 @@ watch(() => [props.channel.id, props.messages.length], scrollToBottom, {
 <template>
     <div
         class="flex h-full w-full flex-col justify-between p-4 pb-2"
-        style="height: calc(100vh - 100px)"
+        style="height: calc(100vh - 125px)"
     >
         <div
             ref="messagesContainer"
@@ -41,11 +41,12 @@ watch(() => [props.channel.id, props.messages.length], scrollToBottom, {
             <span
                 class="mt-auto w-full py-4 text-center text-lg"
                 :class="{ 'mb-4 border-b': messages.length > 0 }"
-            >
-                This is the very beginning of the
-                <strong>{{ channel.name }}</strong>
-                channel.
-            </span>
+                v-html="
+                    $t('This is the very beginning of the :name channel.', {
+                        name: `<strong>${channel.name}</strong>`,
+                    })
+                "
+            ></span>
 
             <div class="flex gap-x-2" v-for="message in messages">
                 <img
@@ -95,7 +96,7 @@ watch(() => [props.channel.id, props.messages.length], scrollToBottom, {
                     class="rounded-md bg-green-800 px-4 py-2 text-base text-white"
                     as="button"
                 >
-                    Join Channel
+                    {{ $t('Join Channel') }}
                 </Link>
             </div>
         </div>
