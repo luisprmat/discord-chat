@@ -109,7 +109,7 @@ const toggleRecoveryMode = (clearErrors: () => void): void => {
                     name="recovery_code"
                     type="text"
                     :placeholder="$t('Enter recovery code')"
-                    :autofocus="showRecoveryInput"
+                    v-focus
                     required
                 />
                 <InputError :message="errors.recovery_code" />

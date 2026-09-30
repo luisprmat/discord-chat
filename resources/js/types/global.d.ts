@@ -1,4 +1,5 @@
 import type { Auth } from '@/types/auth';
+import { Directive } from 'vue';
 
 // Extend ImportMeta interface for Vite...
 declare module 'vite/client' {
@@ -25,6 +26,10 @@ declare module '@inertiajs/core' {
 }
 
 declare module 'vue' {
+    interface GlobalDirectives {
+        vFocus: Directive<HTMLElement, boolean | undefined>;
+    }
+
     interface ComponentCustomProperties {
         $inertia: typeof Router;
         $page: Page;

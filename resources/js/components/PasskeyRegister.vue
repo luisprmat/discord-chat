@@ -82,7 +82,7 @@ const handleCancel = () => {
                 v-model="name"
                 :placeholder="$t('e.g., MacBook Pro, iPhone')"
                 class="mt-1 block w-full border-foreground/20"
-                autofocus
+                v-focus
             />
             <p class="text-xs text-muted-foreground">
                 {{ $t('A name helps you identify this passkey later.') }}

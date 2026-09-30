@@ -30,18 +30,39 @@
             }
         </style>
 
-        <link rel="icon" href="/favicon.ico" sizes="any">
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+        {{-- Favicons --}}
+
+        <link
+            rel="apple-touch-icon"
+            sizes="76x76"
+            href="{{ asset("images/apple-touch-icon.png") }}"
+        />
+        <link
+            rel="icon"
+            type="image/png"
+            sizes="32x32"
+            href="{{ asset("images/favicon-32x32.png") }}"
+        />
+        <link
+            rel="icon"
+            type="image/png"
+            sizes="16x16"
+            href="{{ asset("images/favicon-16x16.png") }}"
+        />
+        <link
+            rel="icon"
+            type="image/x-icon"
+            href="{{ asset("images/favicon.ico") }}"
+        />
 
         @fonts
 
         @vite(['resources/css/app.css', 'resources/js/app.ts', "resources/js/pages/{$page['component']}.vue"])
         <x-inertia::head>
-            <title>{{ config('app.name', 'Laravel') }}</title>
+            <title>{{ config('app.name', 'Reverb') }}</title>
         </x-inertia::head>
     </head>
-    <body class="font-sans antialiased">
+    <body class="h-screen w-screen antialiased">
         <x-inertia::app />
     </body>
 </html>

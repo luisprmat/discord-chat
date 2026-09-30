@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Casts\Markdown;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -27,5 +28,10 @@ class Message extends Model
     public function channel(): BelongsTo
     {
         return $this->belongsTo(Channel::class);
+    }
+
+    protected function serializeDate(DateTimeInterface $date): string
+    {
+        return $date->format('H:i');
     }
 }

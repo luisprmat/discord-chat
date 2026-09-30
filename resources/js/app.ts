@@ -2,6 +2,7 @@ import { createInertiaApp } from '@inertiajs/vue3';
 import { initializeTheme } from '@/composables/useAppearance';
 import AppLayout from '@/layouts/AppLayout.vue';
 import AuthLayout from '@/layouts/AuthLayout.vue';
+import ChatLayout from '@/layouts/ChatLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
 import { initializeFlashToast } from '@/lib/flashToast';
 import { i18nVue } from 'laravel-vue-i18n';
@@ -18,6 +19,8 @@ void createInertiaApp({
                 return AuthLayout;
             case name.startsWith('settings/'):
                 return [AppLayout, SettingsLayout];
+            case name.startsWith('workspace/'):
+                return ChatLayout;
             default:
                 return AppLayout;
         }
@@ -32,6 +35,14 @@ void createInertiaApp({
                     default: Record<string, string>;
                 }>('../../lang/*.json');
                 return await langs[`../../lang/${lang}.json`]();
+            },
+        });
+
+        app.directive('focus', {
+            mounted: (el: HTMLElement, shouldFocus) => {
+                if (shouldFocus.value !== false) {
+                    el.focus();
+                }
             },
         });
     },
