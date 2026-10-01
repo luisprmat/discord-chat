@@ -36,6 +36,7 @@ void createInertiaApp({
                 return AppLayout;
         }
     },
+    dev: import.meta.env.DEV,
     progress: {
         color: '#4B5563',
     },

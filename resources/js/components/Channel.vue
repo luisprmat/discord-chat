@@ -4,6 +4,11 @@ import Editor from '@/components/Editor.vue';
 import { Link } from '@inertiajs/vue3';
 import { join } from '@/routes/channels';
 import { onMounted, useTemplateRef, watch } from 'vue';
+import { useEchoPublic } from '@laravel/echo-vue';
+
+type MessageData = {
+    message: Message;
+};
 
 const props = defineProps<{
     channel: Channel;
@@ -21,6 +26,18 @@ const scrollToBottom = (): void => {
         });
     }
 };
+
+useEchoPublic<MessageData>(
+    `channels.${props.channel.id}`,
+    'MessageSent',
+    (e) => {
+        const messageExists = props.messages.some((m) => m.id === e.message.id);
+
+        if (!messageExists) {
+            props.messages.push(e.message);
+        }
+    },
+);
 
 onMounted(scrollToBottom);
 
