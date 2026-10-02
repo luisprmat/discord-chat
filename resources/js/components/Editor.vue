@@ -18,6 +18,8 @@ const handleSubmit = () => {
         onSuccess: () => form.resetAndClearErrors(),
     });
 };
+
+const emit = defineEmits(['typing']);
 </script>
 
 <template>
@@ -36,6 +38,7 @@ const handleSubmit = () => {
                     $t('Message #:channelName', { channelName: channel.name })
                 "
                 autofocus
+                @keyup="emit('typing')"
             />
 
             <p v-if="form.errors.content" class="text-sm text-fuchsia-600">

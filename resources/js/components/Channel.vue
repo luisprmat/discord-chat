@@ -1,13 +1,19 @@
 <script setup lang="ts">
 import { Channel, Message } from '@/types';
 import Editor from '@/components/Editor.vue';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 import { join } from '@/routes/channels';
-import { onMounted, useTemplateRef, watch } from 'vue';
+import { computed, onMounted, ref, useTemplateRef, watch } from 'vue';
 import { useEcho } from '@laravel/echo-vue';
+import { trans } from 'laravel-vue-i18n';
 
 type MessageData = {
     message: Message;
+};
+
+type TypingData = {
+    id: number;
+    name: string;
 };
 
 const props = defineProps<{
@@ -15,6 +21,13 @@ const props = defineProps<{
     messages: Message[];
     subscribed: boolean;
 }>();
+
+const page = usePage();
+const user = computed(() => page.props.auth.user);
+
+const isTyping = ref(false);
+const usersTyping = ref<TypingData[]>([]);
+const debouncer = ref<number | null>(null);
 
 const messagesContainer = useTemplateRef<HTMLDivElement>('messagesContainer');
 
@@ -27,12 +40,26 @@ const scrollToBottom = (): void => {
     }
 };
 
-useEcho<MessageData>(`channels.${props.channel.id}`, 'MessageSent', (e) => {
-    const messageExists = props.messages.some((m) => m.id === e.message.id);
+const { channel: socketChannel } = useEcho<MessageData>(
+    `channels.${props.channel.id}`,
+    'MessageSent',
+    (e) => {
+        const messageExists = props.messages.some((m) => m.id === e.message.id);
 
-    if (!messageExists) {
-        props.messages.push(e.message);
-    }
+        if (!messageExists) {
+            props.messages.push(e.message);
+        }
+    },
+);
+
+socketChannel().listenForWhisper('StartTyping', (event: TypingData) => {
+    usersTyping.value.push(event);
+});
+
+socketChannel().listenForWhisper('StopTyping', (event: TypingData) => {
+    usersTyping.value = usersTyping.value.filter(
+        (user) => user.id !== event.id,
+    );
 });
 
 onMounted(scrollToBottom);
@@ -40,6 +67,52 @@ onMounted(scrollToBottom);
 watch(() => [props.channel.id, props.messages.length], scrollToBottom, {
     flush: 'post',
 });
+
+const debounce = (startCallback: () => void, stopCallback: () => void) => {
+    if (debouncer.value) {
+        clearTimeout(debouncer.value);
+    }
+
+    debouncer.value = setTimeout(() => {
+        isTyping.value = false;
+        stopCallback();
+    }, 2000);
+
+    if (!isTyping.value) {
+        isTyping.value = true;
+        startCallback();
+    }
+};
+
+const typing = () => {
+    debounce(
+        () => {
+            socketChannel().whisper('StartTyping', {
+                id: user.value.id,
+                name: user.value.name,
+            });
+        },
+        () => {
+            socketChannel().whisper('StopTyping', {
+                id: user.value.id,
+                name: user.value.name,
+            });
+        },
+    );
+};
+
+const typingUsers = (): string => {
+    switch (usersTyping.value.length) {
+        case 0:
+            return '';
+        case 1:
+            return `${trans(':userA is typing', { userA: usersTyping.value[0].name })}...`;
+        case 2:
+            return `${trans(':userA and :userB are typing', { userA: usersTyping.value[0].name, userB: usersTyping.value[1].name })}...`;
+        default:
+            return `${trans('Several people are typing')}...`;
+    }
+};
 </script>
 
 <template>
@@ -91,12 +164,13 @@ watch(() => [props.channel.id, props.messages.length], scrollToBottom, {
 
         <div class="flex w-full">
             <div v-if="subscribed" class="flex w-full flex-col gap-y-1">
-                <Editor :channel />
+                <Editor :channel @typing="typing" />
 
                 <!-- Typing Indicator -->
                 <span
                     class="block shrink-0 text-xs text-gray-500 after:content-['\200b']"
-                ></span>
+                    >{{ typingUsers() }}</span
+                >
             </div>
 
             <div
