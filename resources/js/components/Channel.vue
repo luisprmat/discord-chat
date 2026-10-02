@@ -4,7 +4,7 @@ import Editor from '@/components/Editor.vue';
 import { Link } from '@inertiajs/vue3';
 import { join } from '@/routes/channels';
 import { onMounted, useTemplateRef, watch } from 'vue';
-import { useEchoPublic } from '@laravel/echo-vue';
+import { useEcho } from '@laravel/echo-vue';
 
 type MessageData = {
     message: Message;
@@ -27,17 +27,13 @@ const scrollToBottom = (): void => {
     }
 };
 
-useEchoPublic<MessageData>(
-    `channels.${props.channel.id}`,
-    'MessageSent',
-    (e) => {
-        const messageExists = props.messages.some((m) => m.id === e.message.id);
+useEcho<MessageData>(`channels.${props.channel.id}`, 'MessageSent', (e) => {
+    const messageExists = props.messages.some((m) => m.id === e.message.id);
 
-        if (!messageExists) {
-            props.messages.push(e.message);
-        }
-    },
-);
+    if (!messageExists) {
+        props.messages.push(e.message);
+    }
+});
 
 onMounted(scrollToBottom);
 
@@ -55,40 +51,42 @@ watch(() => [props.channel.id, props.messages.length], scrollToBottom, {
             ref="messagesContainer"
             class="mb-4 flex h-full grow scrollbar-thin flex-col overflow-y-scroll"
         >
-            <span
-                class="mt-auto w-full py-4 text-center text-lg"
-                :class="{ 'mb-4 border-b': messages.length > 0 }"
-                v-html="
-                    $t('This is the very beginning of the :name channel.', {
-                        name: `<strong>${channel.name}</strong>`,
-                    })
-                "
-            ></span>
+            <template v-if="subscribed">
+                <span
+                    class="mt-auto w-full py-4 text-center text-lg"
+                    :class="{ 'mb-4 border-b': messages.length > 0 }"
+                    v-html="
+                        $t('This is the very beginning of the :name channel.', {
+                            name: `<strong>${channel.name}</strong>`,
+                        })
+                    "
+                ></span>
 
-            <div class="flex gap-x-2" v-for="message in messages">
-                <img
-                    :src="message.user.avatar"
-                    :alt="message.user.name"
-                    class="size-10 rounded-md"
-                />
+                <div class="flex gap-x-2" v-for="message in messages">
+                    <img
+                        :src="message.user.avatar"
+                        :alt="message.user.name"
+                        class="size-10 rounded-md"
+                    />
 
-                <div>
-                    <div class="flex items-center gap-x-2">
-                        <span
-                            class="text-lg font-bold"
-                            v-text="message.user.name"
-                        ></span>
+                    <div>
+                        <div class="flex items-center gap-x-2">
+                            <span
+                                class="text-lg font-bold"
+                                v-text="message.user.name"
+                            ></span>
 
-                        <time
-                            :datetime="message.sent_at"
-                            class="text-sm text-gray-600"
-                            v-text="message.sent_at"
-                        ></time>
+                            <time
+                                :datetime="message.sent_at"
+                                class="text-sm text-gray-600"
+                                v-text="message.sent_at"
+                            ></time>
+                        </div>
+
+                        <div v-html="message.content" class="text-lg"></div>
                     </div>
-
-                    <div v-html="message.content" class="text-lg"></div>
                 </div>
-            </div>
+            </template>
         </div>
 
         <div class="flex w-full">
