@@ -4,9 +4,13 @@ import Clock from '@/components/icons/Clock.vue';
 import Forward from '@/components/icons/Forward.vue';
 import Home from '@/components/icons/Home.vue';
 import Question from '@/components/icons/Question.vue';
+import { joinWorkspace, leaveWorkspace } from '@/composables/useOnlineUsers';
 import { logout, reset } from '@/routes';
 import { Form, Link, router, usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { computed, onMounted, onUnmounted } from 'vue';
+
+onMounted(joinWorkspace);
+onUnmounted(leaveWorkspace);
 
 const handleLogout = () => {
     router.flushAll();

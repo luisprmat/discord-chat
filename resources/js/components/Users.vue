@@ -1,37 +1,13 @@
 <script setup lang="ts">
+import { useOnlineUsers } from '@/composables/useOnlineUsers';
 import { User } from '@/types';
-import { useEchoPresence } from '@laravel/echo-vue';
-import { ref } from 'vue';
-
-type PresenceUser = Pick<User, 'id' | 'name'>;
 
 defineProps<{
     openUsers: boolean;
     users: User[];
 }>();
 
-const onlineUserIds = ref<Set<User['id']>>(new Set());
-
-const isOnline = (user: User): boolean => onlineUserIds.value.has(user.id);
-
-const markOnline = (presenceUsers: PresenceUser[]) => {
-    const ids = new Set(onlineUserIds.value);
-    presenceUsers.forEach((user) => ids.add(user.id));
-    onlineUserIds.value = ids;
-};
-
-const markOffline = (presenceUsers: PresenceUser[]) => {
-    const ids = new Set(onlineUserIds.value);
-    presenceUsers.forEach((user) => ids.delete(user.id));
-    onlineUserIds.value = ids;
-};
-
-const { channel } = useEchoPresence('workspace');
-
-channel()
-    .here((users: PresenceUser[]) => markOnline(users))
-    .joining((user: PresenceUser) => markOnline([user]))
-    .leaving((user: PresenceUser) => markOffline([user]));
+const { isOnline } = useOnlineUsers();
 </script>
 
 <template>
